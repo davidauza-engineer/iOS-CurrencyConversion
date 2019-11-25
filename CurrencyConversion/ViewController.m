@@ -41,7 +41,11 @@
     self.convertButton.enabled = YES;
     double inputValue = [self.inputField.text doubleValue];
     double euroValue = inputValue * currencies.EUR;
+    double yenValue = inputValue * currencies.JPY;
+    double poundValue = inputValue * currencies.GBP;
     self.currencyA.text = [NSString stringWithFormat:@"%.2f", euroValue];
+    self.currencyB.text = [NSString stringWithFormat:@"%.2f", yenValue];
+    self.currencyC.text = [NSString stringWithFormat:@"%.2f", poundValue];
 }
 
 - (void)viewDidLoad {
