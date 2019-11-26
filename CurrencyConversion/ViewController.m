@@ -49,13 +49,20 @@
 // This method is called once the currency data is fetched.
 - (void)currencyRequest:(CRCurrencyRequest *)req retrievedCurrencies:(CRCurrencyResults *)currencies {
     self.convertButton.enabled = YES;
-    double inputValue = [self.inputField.text doubleValue];
+    double inputValue = [self getInputValue];
     double euroValue = inputValue * currencies.EUR;
     double yenValue = inputValue * currencies.JPY;
     double poundValue = inputValue * currencies.GBP;
     self.currencyA.text = [NSString stringWithFormat:@"%.2f", euroValue];
     self.currencyB.text = [NSString stringWithFormat:@"%.2f", yenValue];
     self.currencyC.text = [NSString stringWithFormat:@"%.2f", poundValue];
+}
+
+// This method retrieves the user input and format it appropriately.
+- (double)getInputValue {
+    NSMutableString *userInput = [self.inputField.text mutableCopy];
+    userInput = [[userInput stringByReplacingOccurrencesOfString:@"," withString:@"."] mutableCopy];
+    return [userInput doubleValue];
 }
 
 // This method is used to dismiss the keyboard in case it is open.
