@@ -6,6 +6,9 @@
 //  Copyright © 2019 David Auza. All rights reserved.
 //
 
+// TODO limit input to two decimals.
+// TODO Add dynamic correction to error - <check is Numeric while editing>
+// TODO carefull with the update while correcting errors - Check the update button in general.
 #import "ViewController.h"
 #import <CurrencyRequest/CRCurrencyRequest.h>
 #import <CurrencyRequest/CRCurrencyResults.h>
@@ -17,6 +20,8 @@
 @property (nonatomic) BOOL firstConversionMade;
 
 @property (weak, nonatomic) IBOutlet UITextField *inputField;
+
+@property (weak, nonatomic) IBOutlet UILabel *inputFeedback;
 
 @property (weak, nonatomic) IBOutlet UIButton *convertButton;
 
@@ -62,7 +67,31 @@
 - (double)getInputValue {
     NSMutableString *userInput = [self.inputField.text mutableCopy];
     userInput = [[userInput stringByReplacingOccurrencesOfString:@"," withString:@"."] mutableCopy];
-    return [userInput doubleValue];
+    NSScanner *scanner = [NSScanner scannerWithString: userInput];
+    BOOL isNumeric = [scanner scanDouble:NULL] && [scanner isAtEnd];
+    if (isNumeric) {
+        [self updateInputFeedback:NO];
+        return [userInput doubleValue];
+    } else {
+        [self updateInputFeedback:YES];
+        return 0;
+    }
+}
+
+// This method updates the inputFeedback label.
+- (void)updateInputFeedback:(BOOL)hasError {
+    NSString *errorMesssage = @"Not a valid input. Please try again.";
+    NSString *emptyMessage = @"";
+    NSString *currentText = self.inputFeedback.text;
+    if (hasError) {
+        if (![currentText isEqualToString:errorMesssage]) {
+            self.inputFeedback.text = errorMesssage;
+        }
+    } else {
+        if (![currentText isEqualToString:emptyMessage]) {
+            self.inputFeedback.text = emptyMessage;
+        }
+    }
 }
 
 // This method is used to dismiss the keyboard in case it is open.
@@ -72,7 +101,7 @@
     }
 }
 
-// This method changes the text of the convertButton while editing if the first conversion has been made.
+// This method is called when the user is editing the inputField.
 - (void)textFieldDidChange {
     if (self.firstConversionMade) {
         NSString *buttonText = @"Update";
@@ -86,6 +115,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [self updateInputFeedback:NO];
     // Set firstConversionMade to NO.
     self.firstConversionMade = NO;
     // Set inputField delegate.
