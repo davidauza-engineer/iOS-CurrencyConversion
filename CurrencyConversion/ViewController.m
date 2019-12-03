@@ -6,9 +6,13 @@
 //  Copyright © 2019 David Auza. All rights reserved.
 //
 
-// TODO limit input to two decimals.
 // TODO Add dynamic correction to error - <check is Numeric while editing>
 // TODO carefull with the update while correcting errors - Check the update button in general.
+// TODO transform the input number to 10.999,99
+// TODO fix the ,99 thing
+// TODO format output
+// TODO fix label overlapping
+// TODO check textFieldDidChange logic
 #import "ViewController.h"
 #import <CurrencyRequest/CRCurrencyRequest.h>
 #import <CurrencyRequest/CRCurrencyResults.h>
@@ -94,11 +98,49 @@
     }
 }
 
-// This method is used to dismiss the keyboard in case it is open.
-- (void)dismissKeyboard {
-    if ([self.inputField isFirstResponder]) {
-        [self.inputField resignFirstResponder];
+// This method is used to validate user input.
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    if (textField == self.inputField) {
+        NSString *updatedText = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        // Separate by a '.' or a ','.
+        NSArray *stringsArray = [updatedText componentsSeparatedByString:[[NSLocale currentLocale] objectForKey:NSLocaleDecimalSeparator]];
+        
+        // Before decimal separator only allow 5 digits.
+        if (stringsArray.count > 0) {
+            NSString *dollarAmount = stringsArray[0];
+            if (dollarAmount.length > 5) {
+                return NO;
+            }
+        }
+        
+        // After decimal separator allow only 2 digits.
+        if (stringsArray.count > 1) {
+            NSString *centAmount = stringsArray[1];
+            if (centAmount.length > 2) {
+                return NO;
+            }
+        }
+        
+        // Allow only one decimal separator ('.' or ',').
+        if (stringsArray.count > 2) {
+            return NO;
+        }
+        
+        
+        if (textField.text.length < 8) {
+            // User should be able to input only 0-9, '.' and ',' characters.
+            NSCharacterSet *set = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789.,"] invertedSet];
+            NSString *filtered = [[string componentsSeparatedByCharactersInSet:set] componentsJoinedByString:@""];
+            return [string isEqualToString:filtered];
+        } else {
+            if (range.length > 0) {
+                return YES;
+            } else {
+                return NO;
+            }
+        }
     }
+    return YES;
 }
 
 // This method is called when the user is editing the inputField.
@@ -108,6 +150,13 @@
         if (self.convertButton.currentTitle != buttonText) {
             [_convertButton setTitle:buttonText forState:UIControlStateNormal];
         }
+    }
+}
+
+// This method is used to dismiss the keyboard in case it is open.
+- (void)dismissKeyboard {
+    if ([self.inputField isFirstResponder]) {
+        [self.inputField resignFirstResponder];
     }
 }
 
@@ -124,7 +173,7 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(dismissKeyboard)];
     [self.view addGestureRecognizer:tap];
     // Add a "textFieldDidChange" notification method to the text field control.
-    [self.inputField addTarget: self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
+    [self.inputField addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
 }
 
 
