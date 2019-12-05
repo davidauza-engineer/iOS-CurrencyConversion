@@ -6,6 +6,7 @@
 //  Copyright © 2019 David Auza. All rights reserved.
 //
 
+// TODO empty input
 // TODO Add dynamic correction to error - <check is Numeric while editing>
 // TODO carefull with the update while correcting errors - Check the update button in general.
 // TODO transform the input number to 10.999,99
