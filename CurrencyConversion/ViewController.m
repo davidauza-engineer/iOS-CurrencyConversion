@@ -6,9 +6,6 @@
 //  Copyright © 2019 David Auza. All rights reserved.
 //
 
-// TODO empty input
-// TODO Add dynamic correction to error - <check is Numeric while editing>
-// TODO carefull with the update while correcting errors - Check the update button in general.
 // TODO transform the input number to 10.999,99
 // TODO fix the ,99 thing
 // TODO format output
@@ -70,10 +67,8 @@
 
 // This method retrieves the user input and format it appropriately.
 - (double)getInputValue {
-    NSMutableString *userInput = [self.inputField.text mutableCopy];
-    userInput = [[userInput stringByReplacingOccurrencesOfString:@"," withString:@"."] mutableCopy];
-    NSScanner *scanner = [NSScanner scannerWithString: userInput];
-    BOOL isNumeric = [scanner scanDouble:NULL] && [scanner isAtEnd];
+    NSString *userInput = [self getInputFieldText];
+    BOOL isNumeric = [self isNumeric:userInput];
     if (isNumeric) {
         [self updateInputFeedback:NO];
         return [userInput doubleValue];
@@ -81,6 +76,20 @@
         [self updateInputFeedback:YES];
         return 0;
     }
+}
+
+// This method appropriately returns the text contained in the inputField.
+- (NSString *)getInputFieldText {
+    NSMutableString *inputFieldText = [self.inputField.text mutableCopy];
+    inputFieldText = [[inputFieldText stringByReplacingOccurrencesOfString:@"," withString:@"."] mutableCopy];
+    return inputFieldText;
+}
+
+// This method returns YES if the given NSString contains a numeric value, otherwise it returns NO.
+- (BOOL)isNumeric:(NSString *)stringToEvaluate {
+    NSScanner *scanner = [NSScanner scannerWithString:stringToEvaluate];
+    BOOL isNumeric = [scanner scanDouble:NULL] && [scanner isAtEnd];
+    return isNumeric;
 }
 
 // This method updates the inputFeedback label.
@@ -152,6 +161,16 @@
             [_convertButton setTitle:buttonText forState:UIControlStateNormal];
         }
     }
+    // Check if the inputField has a numeric value and if so enable/disable the convertButton accordingly.
+    if ([self isNumeric:[self getInputFieldText]]) {
+        if (!self.convertButton.isEnabled) {
+            self.convertButton.enabled = YES;
+        }
+    } else {
+        if (self.convertButton.isEnabled) {
+            self.convertButton.enabled = NO;
+        }
+    }
 }
 
 // This method is used to dismiss the keyboard in case it is open.
@@ -165,6 +184,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    // Set inputFeedback label to empty.
     [self updateInputFeedback:NO];
     // Set firstConversionMade to NO.
     self.firstConversionMade = NO;
@@ -175,6 +195,8 @@
     [self.view addGestureRecognizer:tap];
     // Add a "textFieldDidChange" notification method to the text field control.
     [self.inputField addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
+    // Disable button
+    self.convertButton.enabled = NO;
 }
 
 
