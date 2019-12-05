@@ -195,7 +195,7 @@
     [self.view addGestureRecognizer:tap];
     // Add a "textFieldDidChange" notification method to the text field control.
     [self.inputField addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
-    // Disable button
+    // Disable button.
     self.convertButton.enabled = NO;
 }
 
