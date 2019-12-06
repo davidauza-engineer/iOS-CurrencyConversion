@@ -8,9 +8,9 @@
 
 // TODO transform the input number to 10.999,99
 // TODO fix the ,99 thing
-// TODO format output
 // TODO fix label overlapping
 // TODO check textFieldDidChange logic
+// TODO horizontal layout
 #import "ViewController.h"
 #import <CurrencyRequest/CRCurrencyRequest.h>
 #import <CurrencyRequest/CRCurrencyResults.h>
@@ -60,9 +60,9 @@
     double euroValue = inputValue * currencies.EUR;
     double yenValue = inputValue * currencies.JPY;
     double poundValue = inputValue * currencies.GBP;
-    self.currencyA.text = [NSString stringWithFormat:@"%.2f", euroValue];
-    self.currencyB.text = [NSString stringWithFormat:@"%.2f", yenValue];
-    self.currencyC.text = [NSString stringWithFormat:@"%.2f", poundValue];
+    self.currencyA.text = [self formatNumber:euroValue];
+    self.currencyB.text = [self formatNumber:yenValue];
+    self.currencyC.text = [self formatNumber:poundValue];
 }
 
 // This method retrieves the user input and format it appropriately.
@@ -178,6 +178,19 @@
     if ([self.inputField isFirstResponder]) {
         [self.inputField resignFirstResponder];
     }
+}
+
+// This method format the given double number to the format: '1,000' for integers and '999,999.99' for doubles.
+- (NSString *)formatNumber:(double)numberToFormat {
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    [formatter setGroupingSeparator:@","];
+    [formatter setGroupingSize:3];
+    [formatter setMinimumFractionDigits:0];
+    [formatter setMaximumFractionDigits:2];
+    [formatter setDecimalSeparator:@"."];
+    NSString *result = [formatter stringFromNumber:[NSNumber numberWithDouble:numberToFormat]];
+    return result;
 }
 
 // This method is called after loading the View.
