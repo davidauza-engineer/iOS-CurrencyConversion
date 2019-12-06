@@ -9,7 +9,6 @@
 // TODO transform the input number to 10.999,99
 // TODO fix the ,99 thing
 // TODO fix label overlapping
-// TODO check textFieldDidChange logic
 // TODO horizontal layout
 #import "ViewController.h"
 #import <CurrencyRequest/CRCurrencyRequest.h>
@@ -157,6 +156,7 @@
 
 // This method is called when the user is editing the inputField.
 - (void)textFieldDidChange {
+    // Update the convertButton title if the first conversion has been made.
     if (self.firstConversionMade) {
         NSString *buttonText = @"Update";
         if (self.convertButton.currentTitle != buttonText) {
