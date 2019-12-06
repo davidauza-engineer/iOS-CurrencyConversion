@@ -123,6 +123,7 @@
                         <outlet property="currencyC" destination="91e-QC-zcR" id="Btu-fx-axw"/>
                         <outlet property="inputFeedback" destination="Fhh-QJ-sLQ" id="1VF-Qq-EDq"/>
                         <outlet property="inputField" destination="UCu-v1-zCn" id="S2i-XY-ZMy"/>
+                        <outlet property="maxLabel" destination="K5q-3n-u4x" id="yrl-tF-Ikg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

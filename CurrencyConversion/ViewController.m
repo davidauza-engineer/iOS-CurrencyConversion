@@ -23,6 +23,8 @@
 
 @property (weak, nonatomic) IBOutlet UITextField *inputField;
 
+@property (weak, nonatomic) IBOutlet UILabel *maxLabel;
+
 @property (weak, nonatomic) IBOutlet UILabel *inputFeedback;
 
 @property (weak, nonatomic) IBOutlet UIButton *convertButton;
@@ -180,15 +182,15 @@
     }
 }
 
-// This method format the given double number to the format: '1,000' for integers and '999,999.99' for doubles.
+// This method formats the given double number to have at max two decimals and a locale separator every three numbers.
 - (NSString *)formatNumber:(double)numberToFormat {
     NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
     [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
-    [formatter setGroupingSeparator:@","];
+    [formatter setGroupingSeparator:[[NSLocale currentLocale] objectForKey:NSLocaleGroupingSeparator]];
     [formatter setGroupingSize:3];
-    [formatter setMinimumFractionDigits:0];
+    [formatter setMinimumFractionDigits:2];
     [formatter setMaximumFractionDigits:2];
-    [formatter setDecimalSeparator:@"."];
+    [formatter setDecimalSeparator:[[NSLocale currentLocale] objectForKey:NSLocaleDecimalSeparator]];
     NSString *result = [formatter stringFromNumber:[NSNumber numberWithDouble:numberToFormat]];
     return result;
 }
@@ -197,6 +199,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    // Set label starting values.
+    NSString *startingValue = [self formatNumber:0];
+    self.currencyA.text = startingValue;
+    self.currencyB.text = startingValue;
+    self.currencyC.text = startingValue;
+    self.maxLabel.text = [NSString stringWithFormat:@"%@%@", @"Max: ", [self formatNumber:99999.99]];
     // Set inputFeedback label to empty.
     [self updateInputFeedback:NO];
     // Set firstConversionMade to NO.
