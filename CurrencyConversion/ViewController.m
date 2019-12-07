@@ -6,8 +6,6 @@
 //  Copyright © 2019 David Auza. All rights reserved.
 //
 
-// TODO transform the input number to 10.999,99
-// TODO fix the ,99 thing
 // TODO fix label overlapping
 // TODO horizontal layout
 #import "ViewController.h"
@@ -19,6 +17,8 @@
 @property (nonatomic) CRCurrencyRequest *req;
 
 @property (nonatomic) BOOL firstConversionMade;
+
+@property (nonatomic) NSString *previousInputFieldText;
 
 @property (weak, nonatomic) IBOutlet UITextField *inputField;
 
@@ -56,14 +56,21 @@
 
 // This method is called once the currency data is fetched.
 - (void)currencyRequest:(CRCurrencyRequest *)req retrievedCurrencies:(CRCurrencyResults *)currencies {
-    self.convertButton.enabled = YES;
     double inputValue = [self getInputValue];
+    [self updateInputFieldDuringConversion:inputValue];
     double euroValue = inputValue * currencies.EUR;
     double yenValue = inputValue * currencies.JPY;
     double poundValue = inputValue * currencies.GBP;
     self.currencyA.text = [self formatNumber:euroValue];
     self.currencyB.text = [self formatNumber:yenValue];
     self.currencyC.text = [self formatNumber:poundValue];
+}
+
+// This method update inputField just before the results of the conversion are presented to the user.
+- (void)updateInputFieldDuringConversion:(double)inputValue {
+    self.previousInputFieldText = self.inputField.text;
+    self.inputField.text = [NSString stringWithFormat:@"%@%@%@", @"Converted: ", [self formatNumber:inputValue], @" - Tap to update"];
+    self.inputField.textColor = [UIColor systemBlueColor];
 }
 
 // This method retrieves the user input and format it appropriately.
@@ -175,14 +182,27 @@
     }
 }
 
+// This method is called when the user focus on the inputField.
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    if (self.inputField.isFirstResponder) {
+        if (self.firstConversionMade) {
+            self.inputField.text = self.previousInputFieldText;
+            self.convertButton.enabled = YES;
+            self.inputField.textColor = [UIColor labelColor];
+        }
+    }
+}
+
 // This method is used to dismiss the keyboard in case it is open.
 - (void)dismissKeyboard {
     if ([self.inputField isFirstResponder]) {
         [self.inputField resignFirstResponder];
+        // Store the last value present in the text field.
+        self.previousInputFieldText = self.inputField.text;
     }
 }
 
-// This method formats the given double number to have at max two decimals and a locale separator every three numbers.
+// This method formats the given double number to have two decimals and a locale separator every three numbers.
 - (NSString *)formatNumber:(double)numberToFormat {
     NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
     [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -214,8 +234,10 @@
     // Set listener for touch events.
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(dismissKeyboard)];
     [self.view addGestureRecognizer:tap];
-    // Add a "textFieldDidChange" notification method to the text field control.
+    // Add a "textFieldDidChange" notification method.
     [self.inputField addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
+    // Add a "textFieldDidBeginEditing" notification method.
+    [self.inputField addTarget:self action:@selector(textFieldDidBeginEditing:) forControlEvents:UIControlEventEditingDidBegin];
     // Disable button.
     self.convertButton.enabled = NO;
 }
