@@ -6,7 +6,6 @@
 //  Copyright © 2019 David Auza. All rights reserved.
 //
 
-// TODO horizontal layout
 #import "ViewController.h"
 #import <CurrencyRequest/CRCurrencyRequest.h>
 #import <CurrencyRequest/CRCurrencyResults.h>

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -53,7 +53,6 @@
 				054513CE859C462928B505D6 /* Pods-CurrencyConversion.debug.xcconfig */,
 				4B3860C2FB068914D7420790 /* Pods-CurrencyConversion.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
